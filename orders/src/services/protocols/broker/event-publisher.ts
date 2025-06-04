@@ -1,3 +1,5 @@
+import type { ServiceTopics } from '../../../../../contracts'
+
 export abstract class IEventPublisher {
   abstract publish<TTopic extends keyof IEventPublisher.Topics>(
     topic: TTopic,
@@ -6,15 +8,5 @@ export abstract class IEventPublisher {
 }
 
 export namespace IEventPublisher {
-  export interface Topics {
-    [K: `orders.${string}`]: unknown
-
-    'orders.created': {
-      orderId: string
-      amount: number
-      customer: {
-        id: string
-      }
-    }
-  }
+  export type Topics = ServiceTopics<'orders'>
 }
