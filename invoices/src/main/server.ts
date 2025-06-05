@@ -3,6 +3,8 @@ import { AppModule } from '@/main/modules/app.module'
 import { BadRequestException, ValidationPipe } from '@nestjs/common'
 import type { ValidationError } from '@nestjs/common'
 import { HttpAdapterHost, NestFactory } from '@nestjs/core'
+import { Transport } from '@nestjs/microservices'
+import type { MicroserviceOptions } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { HttpExceptionsFilter } from './http-exceptions.filter'
 
@@ -83,10 +85,21 @@ async function bootstrap(): Promise<void> {
   if (isDevMode()) {
     const document = SwaggerModule.createDocument(
       app,
-      new DocumentBuilder().addBearerAuth().setTitle('orders').build(),
+      new DocumentBuilder().addBearerAuth().setTitle('invoices').build(),
     )
     SwaggerModule.setup('docs', app, document)
   }
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://localhost:5672'],
+      queue: 'orders',
+      noAck: false,
+    },
+  })
+
+  await app.startAllMicroservices()
 
   await app.listen(APP_PORT)
 }
@@ -94,12 +107,12 @@ async function bootstrap(): Promise<void> {
 bootstrap()
   .then(() => {
     process.stdout.write(
-      `[Orders] 🚀 Server is running on http://localhost:${APP_PORT}\n`,
+      `[Invoices] 🚀 Server is running on http://localhost:${APP_PORT}\n`,
     )
 
     if (isDevMode()) {
       process.stdout.write(
-        `[Orders] 📚 Swagger is running on http://localhost:${APP_PORT}/docs\n`,
+        `[Invoices] 📚 Swagger is running on http://localhost:${APP_PORT}/docs\n`,
       )
     }
   })
