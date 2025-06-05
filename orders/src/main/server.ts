@@ -1,3 +1,4 @@
+import '@opentelemetry/auto-instrumentations-node/register'
 import { AppModule } from '@/main/modules/app.module'
 import { BadRequestException, ValidationPipe } from '@nestjs/common'
 import type { ValidationError } from '@nestjs/common'

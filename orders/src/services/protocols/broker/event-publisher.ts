@@ -1,4 +1,4 @@
-import type { ServiceTopics } from '../../../../../contracts'
+import type { ServiceTopics } from '@workspace/contracts'
 
 export abstract class IEventPublisher {
   abstract publish<TTopic extends keyof IEventPublisher.Topics>(

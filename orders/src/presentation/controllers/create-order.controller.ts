@@ -1,4 +1,5 @@
 import { ICreateOrder } from '@/domain/usecases/order/create-order'
+import { ITracer } from '@/services/protocols/tracer/tracer'
 import { Body, Controller, Post } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
@@ -33,15 +34,26 @@ class CreateOrderResponse {
 @ApiTags('order')
 @Controller()
 export class CreateOrderController {
-  constructor(readonly createOrder: ICreateOrder) {}
+  constructor(
+    readonly createOrder: ICreateOrder,
+    readonly tracer: ITracer,
+  ) {}
 
   @Post('orders')
   @ApiBadRequestResponse()
   @ApiCreatedResponse()
   async handle(@Body() body: CreateOrderBody): Promise<CreateOrderResponse> {
-    const order = await this.createOrder.create({
-      customerId: body.customerId,
-      amount: body.amount,
+    const order = await this.tracer.startSpan({
+      name: 'CreateOrderService.create',
+      fn: async () =>
+        this.createOrder.create({
+          customerId: body.customerId,
+          amount: body.amount,
+        }),
+      attributes: {
+        customerId: body.customerId,
+        amount: body.amount,
+      },
     })
 
     return {

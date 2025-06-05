@@ -21,5 +21,3 @@ export type ServiceTopics<TService extends string> = {
     ? K
     : never]: Topics[K]
 }
-
-type T = ServiceTopics<'orders'>

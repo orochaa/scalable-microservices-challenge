@@ -10,7 +10,7 @@
   "printWidth": 80,
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
-    "(module-alias|dotenv)",
+    "^@opentelemetry",
     "^@/domain",
     "^@/presentation",
     "^@/services",
