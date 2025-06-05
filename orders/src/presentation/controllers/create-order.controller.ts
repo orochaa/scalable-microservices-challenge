@@ -41,7 +41,7 @@ export class CreateOrderController {
 
   @Post('orders')
   @ApiBadRequestResponse()
-  @ApiCreatedResponse()
+  @ApiCreatedResponse({ type: CreateOrderResponse })
   async handle(@Body() body: CreateOrderBody): Promise<CreateOrderResponse> {
     const order = await this.tracer.startSpan({
       name: 'CreateOrderService.create',

@@ -10,7 +10,7 @@ class HealthCheckResponse {
 @Controller()
 export class HealthCheckController {
   @Get('/health')
-  @ApiOkResponse()
+  @ApiOkResponse({ type: HealthCheckResponse })
   handle(): HealthCheckResponse {
     return { status: 'ok' }
   }
