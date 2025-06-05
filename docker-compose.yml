@@ -1,20 +1,62 @@
 services:
+  prisma:
+    image: postgres:14
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH=trust
+
   broker:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   jaeger:
     image: jaegertracing/all-in-one:1.57
     ports:
-      - "16686:16686" # UI
-      - "6831:6831/udp" # Traces UDP
-      - "14268:14268" # Traces HTTP
-      - "4317:4317" # OTLP/gRPC
-      - "4318:4318" # OTLP/HTTP
+      - '16686:16686' # UI
+      - '6831:6831/udp' # Traces UDP
+      - '14268:14268' # Traces HTTP
+      - '4317:4317' # OTLP/gRPC
+      - '4318:4318' # OTLP/HTTP
+
+  order:
+    container_name: order-api
+    build:
+      context: ./apps/orders/
+      dockerfile: ./Dockerfile
+      target: production
+    ports:
+      - 3000:3000
+    environment:
+      - DB_URL=postgresql://admin:password@prisma:5432/order?schema=public
+      - APP_PORT=3001
+      - OTEL_SERVICE_NAME=order
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+      - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
+
+  invoice:
+    container_name: invoice-api
+    build:
+      context: ./apps/invoices/
+      dockerfile: ./Dockerfile
+      target: production
+    ports:
+      - 3001:3001
+    environment:
+      - DB_URL=postgresql://admin:password@prisma:5432/invoice?schema=public
+      - APP_PORT=3001
+      - OTEL_SERVICE_NAME=invoice
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+      - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
 
   api-gateway:
     image: kong:3.9
@@ -24,15 +66,15 @@ services:
       KONG_ADMIN_GUI_URL: http://localhost:8002
       KONG_DECLARATIVE_CONFIG: '/kong/config.yaml'
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     volumes:
       - './docker/kong/config.yaml:/kong/config.yaml'
     ports:
-      - "8000:8000" # Proxy (API)
-      - "8001:8001" # API (Admin)
-      - "8002:8002" # UI (Admin)
-      - "8443:8443" # Proxy SSL (HTTPs)
-      - "8444:8444" # API (Admin) (HTTPs)
+      - '8000:8000' # Proxy (API)
+      - '8001:8001' # API (Admin)
+      - '8002:8002' # UI (Admin)
+      - '8443:8443' # Proxy SSL (HTTPs)
+      - '8444:8444' # API (Admin) (HTTPs)
 
 volumes:
   rabbitmq_data:

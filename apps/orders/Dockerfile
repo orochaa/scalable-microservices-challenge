@@ -11,6 +11,7 @@ COPY /prisma ./prisma
 COPY /src ./src
 COPY /tsconfig* ./
 COPY /nest* ./
+COPY /contracts ./contracts
 
 FROM base as development
 ENV NODE_ENV=development
@@ -21,3 +22,4 @@ RUN pnpm prisma generate
 RUN pnpm build
 RUN chown -R node /api
 USER node
+ENTRYPOINT  ["pnpm", "start"]

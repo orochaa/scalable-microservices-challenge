@@ -1,5 +1,5 @@
 {
-  "name": "invoices",
+  "name": "orders",
   "description": "Nest TypeScript starter repository",
   "version": "1.0.0",
   "private": true,
@@ -20,7 +20,7 @@
     "ci": "run-s prisma:dev lint test"
   },
   "dependencies": {
-    "@workspace/contracts": "../contracts",
+    "@workspace/contracts": "./contracts",
     "@nestjs/common": "^11.0.6",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.6",
