@@ -1,15 +1,13 @@
-_format_version: '3.0'
+_format_version: "3.0"
 _transform: true
 
 services:
   - name: orders
-    url: http://host.docker.internal:3000
+    url: ${ORDERS_SERVICE_URL}
     protocol: http
     host: host.docker.internal
     port: 3000
     path: /
-    connect_timeout: 10000
-    retries: 3
     routes:
       - name: api-orders
         protocols:
@@ -19,7 +17,7 @@ services:
           - /orders
 
   - name: invoices
-    url: http://host.docker.internal:3001
+    url:  ${INVOICES_SERVICE_URL}
     protocol: http
     host: host.docker.internal
     port: 3001
@@ -36,7 +34,7 @@ plugins:
   - name: cors
     config:
       origins:
-        - '*'
+        - "*"
       methods:
         - GET
         - POST

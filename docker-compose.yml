@@ -28,7 +28,7 @@ services:
       - '4317:4317' # OTLP/gRPC
       - '4318:4318' # OTLP/HTTP
 
-  api-order:
+  api-orders:
     build:
       context: ./apps/orders/
       target: development
@@ -36,10 +36,10 @@ services:
     ports:
       - 3000:3000
     environment:
-      - DB_URL=postgresql://admin:password@prisma:5432/order?schema=public
+      - DB_URL=postgresql://admin:password@prisma:5432/orders?schema=public
       - APP_PORT=3000
       - BROKER_URL=amqp://broker:5672
-      - OTEL_SERVICE_NAME=order
+      - OTEL_SERVICE_NAME=orders
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
       - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
@@ -49,7 +49,7 @@ services:
       - broker
     command: bash -c "pnpm prisma:dev && pnpm dev"
 
-  api-invoice:
+  api-invoices:
     build:
       context: ./apps/invoices/
       target: development
@@ -57,10 +57,10 @@ services:
     ports:
       - 3001:3001
     environment:
-      - DB_URL=postgresql://admin:password@prisma:5432/invoice?schema=public
+      - DB_URL=postgresql://admin:password@prisma:5432/invoices?schema=public
       - APP_PORT=3001
       - BROKER_URL=amqp://broker:5672
-      - OTEL_SERVICE_NAME=invoice
+      - OTEL_SERVICE_NAME=invoices
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
       - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
@@ -71,17 +71,17 @@ services:
     command: bash -c "pnpm dev"
 
   api-gateway:
-    image: kong:3.9
+    build: 
+      context: ./kong
     restart: always
     environment:
       KONG_DATABASE: 'off'
       KONG_ADMIN_LISTEN: '0.0.0.0:8001'
       KONG_ADMIN_GUI_URL: http://localhost:8002
-      KONG_DECLARATIVE_CONFIG: '/kong/config.yaml'
+      ORDERS_SERVICE_URL: http://host.docker.internal:3000
+      INVOICES_SERVICE_URL: http://host.docker.internal:3001
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-    volumes:
-      - './docker/kong/config.yaml:/kong/config.yaml'
     ports:
       - '8000:8000' # Proxy (API)
       - '8001:8001' # API (Admin)
