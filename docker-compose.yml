@@ -5,9 +5,17 @@ services:
     ports:
       - '5432:5432'
     environment:
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_HOST_AUTH=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d postgres"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
   broker:
     image: rabbitmq:3-management
@@ -31,7 +39,7 @@ services:
   api-orders:
     build:
       context: ./apps/orders/
-      target: development
+      target: production
     restart: always
     ports:
       - 3000:3000
@@ -44,15 +52,20 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
       - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
     depends_on:
-      - prisma
-      - jaeger
-      - broker
-    command: bash -c "pnpm prisma:dev && pnpm dev"
+      prisma:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+      broker:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+    command: sh -c "pnpm prisma:prod && pnpm prune --prod && pnpm start"
 
   api-invoices:
     build:
       context: ./apps/invoices/
-      target: development
+      target: production
     restart: always
     ports:
       - 3001:3001
@@ -65,10 +78,15 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
       - OTEL_NODE_ENABLED_INSTRUMENTATIONS=ttp,express,pg,amqplib,nestjs-cor
     depends_on:
-      - prisma
-      - jaeger
-      - broker
-    command: bash -c "pnpm dev"
+      prisma:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+      broker:
+        condition: service_started
+      api-gateway:
+        condition: service_started
+    command: sh -c "pnpm prune --prod && pnpm start"
 
   api-gateway:
     build: 
@@ -90,4 +108,5 @@ services:
       - '8444:8444' # API (Admin) (HTTPs)
 
 volumes:
+  postgres_data:
   rabbitmq_data:

@@ -1,4 +1,4 @@
-FROM node:22 as pnpm
+FROM node:22-alpine as pnpm
 RUN npm install -g pnpm
 
 FROM pnpm as modules
@@ -18,6 +18,3 @@ ENV NODE_ENV=development
 FROM base as production
 ENV NODE_ENV=production
 RUN pnpm build
-RUN pnpm prune --prod
-RUN chown -R node /api
-USER node
