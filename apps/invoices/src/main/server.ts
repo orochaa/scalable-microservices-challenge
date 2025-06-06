@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import '@opentelemetry/auto-instrumentations-node/register'
 import { AppModule } from '@/main/modules/app.module'
 import { BadRequestException, ValidationPipe } from '@nestjs/common'
@@ -93,7 +94,7 @@ async function bootstrap(): Promise<void> {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://localhost:5672'],
+      urls: [process.env.BROKER_URL!],
       queue: 'orders',
       noAck: false,
     },

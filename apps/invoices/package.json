@@ -7,7 +7,7 @@
   "main": "src/main/server.ts",
   "scripts": {
     "build": "nest build",
-    "dev": "nest start --env-file=.env --watch",
+    "dev": "nest start --watch",
     "lint": "run-s lint:tsc lint:prettier lint:eslint",
     "lint:eslint": "eslint --fix \"src/**/*.ts\"",
     "lint:prettier": "prettier --write .",

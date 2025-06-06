@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Run your preparation script
+echo "🚀 Preparing workspace..."
 ./prepare.sh
 
-# Then start Docker Compose
-docker compose up --build
+echo "📦 Starting Docker Compose:"
+docker compose up --build "$@"
