@@ -24,6 +24,7 @@ During this course, we built an application composed of **two independent micros
   - **Grafana** for production
 - Eventual consistency and data replication between services
 - Shared `contracts` package with interfaces and message topics
+- Documentation using Swagger integrated with NestJS
 
 ---
 
@@ -110,6 +111,21 @@ This demonstrates asynchronous communication and eventual consistency between se
 
 ---
 
+## 🔗 UI Access & Dashboards
+
+Once the system is running (`./dev.sh`), you can access the following dashboards and tools in your browser:
+
+| Service               | URL                                                                        | Notes                             |
+| --------------------- | -------------------------------------------------------------------------- | --------------------------------- |
+| **API Gateway**       | [http://localhost:8000](http://localhost:8000)                             | Entry point for all API routes    |
+| **Orders API Docs**   | [http://localhost:8000/orders/docs](http://localhost:8000/orders/docs)     | Swagger UI for Orders API         |
+| **Invoices API Docs** | [http://localhost:8000/invoices/docs](http://localhost:8000/invoices/docs) | Swagger UI for Invoices API       |
+| **Jaeger Tracing**    | [http://localhost:16686](http://localhost:16686)                           | View distributed traces           |
+| **Kong Dashboard**    | [http://localhost:8002](http://localhost:8002)                             | Kong Admin UI                     |
+| **RabbitMQ**          | [http://localhost:15672](http://localhost:15672)                           | User: `guest` / Password: `guest` |
+
+> ⚠️ Make sure Docker is running and `./dev.sh` has been executed before accessing these interfaces.
+
 ## 🧳 Project Structure
 
 ```
@@ -167,3 +183,4 @@ Built two independent microservices, integrated them using asynchronous communic
 - **AWS (ECS, ECR, Fargate, ALB)**
 - **Jaeger**
 - **Grafana**
+- **Swagger**
