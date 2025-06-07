@@ -28,26 +28,6 @@ During this course, we built an application composed of **two independent micros
 
 ---
 
-## 🧭 Architecture Diagrams
-
-### 🧱 High-Level System Architecture
-
-![System Architecture Diagram](./docs/architecture/system-architecture.png)
-
----
-
-### 🔁 Asynchronous Messaging Flow (RabbitMQ)
-
-![Messaging Flow Diagram](./docs/architecture/messaging-flow.png)
-
----
-
-### ☁️ AWS Infrastructure Layout
-
-![AWS Infrastructure Diagram](./docs/architecture/aws-infra.png)
-
----
-
 ## 🚀 Running the Project Locally
 
 To spin up all services for local development, simply run:
